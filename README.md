@@ -1,3 +1,5 @@
+![screenshot](.screenshot.png)
+
                              Asciibattlequarium
                  by Jordan Christiansen <xordspar0@gmail.com>
 
