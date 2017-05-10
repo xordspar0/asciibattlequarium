@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 #
 #############################################################################
 # Asciiquarium - An aquarium animation in ASCII art
@@ -232,24 +232,30 @@ sub add_bubble {
 	my @fish_size = $fish->size();
 	my @fish_pos = $fish->position();
 	my @bubble_pos = @fish_pos;
+	my $speed = 3;
 
 	# moving right
 	if($cb_args->[0] > 0) {
 		$bubble_pos[0] += $fish_size[0];
 	}
+	# moving left
+	if($cb_args->[0] < 0) {
+		$speed = $speed * -1;
+	}
+
 	$bubble_pos[1] += int($fish_size[1] / 2);
 	# bubble always goes on top of the fish
 	$bubble_pos[2]--;
 
 	$anim->new_entity(
-		shape		=> [ '.', 'o', 'O', 'O', 'O' ],
+		shape		=> [ '-', '=', '=', '=', '=' ],
 		type		=> 'bubble',
 		position	=> \@bubble_pos,
-		callback_args	=> [ 0, -1, 0, .1 ],
+		callback_args	=> [ $speed, 0, 0, .1 ],
 		die_offscreen	=> 1,
 		physical	=> 1,
 		coll_handler	=> \&bubble_collision, 
-		default_color	=> 'CYAN',
+		default_color	=> 'RED'
 	);
 }
 
@@ -506,7 +512,7 @@ q{
 		color		=> $color_mask,
 		position	=> [ 0, 0, $depth ],
 		callback	=> \&fish_callback,
-		callback_args	=> [ $speed, 0, 0 ],
+		callback_args	=> [ $speed, -1, 0 ],
 		die_offscreen	=> 1,
 		death_cb	=> \&add_fish,
 		physical	=> 1,
@@ -548,6 +554,10 @@ sub fish_collision {
 			my $line = $anim->get_entities_of_type('fishline')->[0];
 			retract($anim->entity($hook));
 			retract($anim->entity($line));
+			last;
+		} elsif($col_obj->type eq 'bubble') {
+			add_splat($anim, $col_obj->position());
+			$fish->kill();
 			last;
 		}
 	}
@@ -681,12 +691,21 @@ q#
 		auto_trans	=> 1,
 		position	=> [ $x, $y, $depth{'shark'} ],
 		default_color	=> 'WHITE',
+		callback        => \&shark_callback,
 		callback_args	=> [ $speed, 0, 0 ],
 		die_offscreen	=> 1,
 		death_cb	=> sub { group_death(@_, 'teeth') },
 		default_color	=> 'CYAN',
 	);
 
+}
+
+sub shark_callback {
+	my ($fish, $anim) = @_;
+	if(int(rand(100)) > 60) {
+		add_bubble($fish, $anim);
+	}
+	return $fish->move_entity($anim);
 }
 
 # when a shark dies, kill the "teeth" too, the associated
@@ -730,7 +749,7 @@ sub fishhook_cb {
 	# otherwise, just lower until we reach 1/4 from the bottom
 	} else {
 		if( ( $pos[1] + $entity->height) < $anim->height * .75) {
-			$pos[1]++;
+			$pos[1]--;
 		}
 	}
 	
