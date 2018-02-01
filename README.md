@@ -1,9 +1,22 @@
-![screenshot](.screenshot.png)
+Asciibattlequarium
+==================
 
                              Asciibattlequarium
                  by Jordan Christiansen <xordspar0@gmail.com>
 
-                                  Based on
+Description
+-----------
+
+It's Asciiquarium, but with flying laser fish and death machine sharks.
+
+![screenshot](.screenshot.png)
+
+Asciibattlequarium is a modified version of Asciiquarium, which can be found at
+http://robobunny.com/projects/asciiquarium/html/ . The original README from
+Asciiquarium follows.
+
+Asciiquarium
+============
 
                                 Asciiquarium
                     by Kirk Baucom <kbaucom@schizoid.com>
